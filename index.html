@@ -5,6 +5,67 @@
     <meta name="viewport" content="width=device-width">
     <title>Astronauts</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
+    <script>
+      window.addEventListener("load", function() {
+        fetch(`https://handlers.education.launchcode.org/static/astronauts.json`,{method: 'GET'})
+        .then(function(response) {
+          response.json().then(function(json) {
+            let contain = document.getElementById("container");
+            let hoursObject = {};
+            let hourValuesArray = [];
+            for(let j=0; j<json.length; j++) {
+              hoursObject[json[j].hoursInSpace] = [j, json[j].active];
+              hourValuesArray.push(json[j].hoursInSpace);
+            }
+            console.log(hoursObject);
+            hourValuesArray.sort().reverse();
+            let metaIndexArr = [];
+            for(let k=0; k<json.length; k++) {
+              let hoursValue = hourValuesArray[k];
+              metaIndexArr.push(hoursObject[hoursValue][0]);
+            }
+            console.log(metaIndexArr);
+
+            let skillsOfCurrent;
+            let skillStr;
+            let index;
+            let metaIndex;
+            let isActive;
+
+            metaIndex = 0;
+            
+            while(metaIndex < json.length) {
+              index = metaIndexArr[metaIndex];
+            
+              skillsOfCurrent = json[index].skills;
+              skillStr = "";
+              for(let i=0; i<skillsOfCurrent.length; i++) {
+                skillStr += (skillsOfCurrent[i]+", ");
+              }
+              skillStr = skillStr.slice(0, skillStr.length-2);
+
+              isActive = String(json[index].active);
+
+              contain.innerHTML += `
+                <div class="astronaut">
+                  <div class = "bio">
+                    <h3>${json[index].firstName} ${json[index].lastName}</h3>
+                    <h4>Astronaut ${metaIndex+1} of ${json.length}</h4>
+                    <ul>
+                      <li>Hours in space: ${json[index].hoursInSpace}</li>
+                      <li class=${isActive}>Active: ${json[index].active}</li>
+                      <li>Skills: ${skillStr}</li>
+                    </ul>
+                  </div>
+                  <img class="avatar" src="${json[index].picture}">
+                </div>
+              `
+              metaIndex++;
+            }
+          });
+        });
+      });
+    </script>
   </head>
   <body>
     <script src="script.js"></script>
